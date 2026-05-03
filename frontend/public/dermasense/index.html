@@ -19,13 +19,16 @@
     </div>
     <span class="logo-text">Derma<span>Sense</span> AI</span>
   </a>
-  <ul class="nav-links">
-    <li><a href="#" onclick="showPage('home'); return false;" id="nav-home" class="active">Home</a></li>
-    <li><a href="#" onclick="showPage('quiz'); return false;" id="nav-quiz">Skin Analysis</a></li>
-    <li><a href="#" onclick="showPage('products'); return false;" id="nav-products">Products</a></li>
-    <li><a href="#" onclick="showPage('education'); return false;" id="nav-education">Learn</a></li>
-    <li><a href="#" class="nav-cta" onclick="showPage('quiz'); return false;">Start Analysis →</a></li>
+  <ul class="nav-links" id="nav-links">
+    <li><a href="#" onclick="showPage('home'); closeMenu(); return false;" id="nav-home" class="active">Home</a></li>
+    <li><a href="#" onclick="showPage('quiz'); closeMenu(); return false;" id="nav-quiz">Skin Analysis</a></li>
+    <li><a href="#" onclick="showPage('products'); closeMenu(); return false;" id="nav-products">Products</a></li>
+    <li><a href="#" onclick="showPage('education'); closeMenu(); return false;" id="nav-education">Learn</a></li>
+    <li><a href="#" class="nav-cta" onclick="showPage('quiz'); closeMenu(); return false;">Start Analysis →</a></li>
   </ul>
+  <button class="nav-toggle" id="nav-toggle" onclick="toggleMenu()" aria-label="Toggle menu">
+    <span></span><span></span><span></span>
+  </button>
 </nav>
 
 <!-- HOME PAGE -->

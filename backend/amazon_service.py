@@ -1,6 +1,10 @@
 """
-Amazon product data via OpenWeb Ninja / Real-Time Amazon Data (RapidAPI).
+Amazon product data via OpenWeb Ninja (direct API, not RapidAPI).
 Fetches real-time Indian Rupee prices + product URLs for Amazon.in.
+
+Docs: https://www.openwebninja.com/api/real-time-amazon-data
+Base:  https://api.openwebninja.com/realtime-amazon-data
+Auth:  X-API-KEY header
 """
 
 import os
@@ -11,8 +15,7 @@ import asyncio
 
 logger = logging.getLogger(__name__)
 
-RAPIDAPI_HOST = "real-time-amazon-data.p.rapidapi.com"
-BASE_URL = f"https://{RAPIDAPI_HOST}"
+BASE_URL = "https://api.openwebninja.com/realtime-amazon-data"
 
 
 def _headers() -> Optional[Dict[str, str]]:
@@ -20,8 +23,8 @@ def _headers() -> Optional[Dict[str, str]]:
     if not api_key:
         return None
     return {
-        "x-rapidapi-key": api_key,
-        "x-rapidapi-host": RAPIDAPI_HOST,
+        "x-api-key": api_key,
+        "Accept": "application/json",
     }
 
 

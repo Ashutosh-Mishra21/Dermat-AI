@@ -169,10 +169,22 @@ async function generateResults() {
   renderResults();
   showPage("results");
 
-  // Kick off Amazon search in background
-  if (analysisResult && analysisResult.productQueries && analysisResult.productQueries.length) {
-    loadAmazonProducts(analysisResult.productQueries);
+  // Kick off Amazon search in background — always use some queries so products render
+  let queries = (analysisResult && analysisResult.productQueries) || [];
+  if (!queries.length) {
+    queries = [
+      "The Ordinary Niacinamide 10% Zinc 1%",
+      "Minimalist Niacinamide serum",
+      "CeraVe Moisturising Cream",
+      "Differin Adapalene Gel",
+      "Dot & Key Vitamin C serum",
+      "La Roche-Posay Effaclar",
+      "The Derma Co Hyaluronic Acid",
+      "Minimalist Salicylic Acid 2% toner",
+      "Neutrogena Ultra Sheer SPF 50",
+    ];
   }
+  loadAmazonProducts(queries);
 }
 
 /* ---------- Render results ---------- */
@@ -417,3 +429,19 @@ function closeDermFinder() {
 document.addEventListener("keydown", (e) => {
   if (e.key === "Escape") closeDermFinder();
 });
+
+/* ---------- Mobile nav toggle ---------- */
+function toggleMenu() {
+  const links = document.getElementById("nav-links");
+  const btn = document.getElementById("nav-toggle");
+  if (!links || !btn) return;
+  links.classList.toggle("open");
+  btn.classList.toggle("open");
+}
+
+function closeMenu() {
+  const links = document.getElementById("nav-links");
+  const btn = document.getElementById("nav-toggle");
+  if (links) links.classList.remove("open");
+  if (btn) btn.classList.remove("open");
+}
