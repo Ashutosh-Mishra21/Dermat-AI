@@ -241,7 +241,13 @@
             <option>Dairy-heavy diet</option>
             <option>Plant-based / vegan</option>
             <option>Ketogenic or low-carb</option>
+            <option value="__custom__">Other (please specify) ↓</option>
           </select>
+          <div class="diet-custom-wrap hidden" id="diet-custom-wrap">
+            <input type="text" class="text-input" id="diet-custom-input"
+              oninput="updateDietCustom(this.value)"
+              placeholder="Describe your diet (e.g., gluten-free, Mediterranean, intermittent fasting)…">
+          </div>
         </div>
 
         <div class="quiz-nav">
@@ -413,6 +419,11 @@
         <button class="btn-secondary" onclick="showPage('results')">← Back to Analysis</button>
         <button class="btn-secondary" onclick="showPage('quiz')">↻ Retake Quiz</button>
       </div>
+    </div>
+
+    <div class="mode-toggle" id="products-mode-toggle">
+      <button class="active" id="mode-recommended" onclick="switchProductsMode('recommended')">✦ Recommended for You</button>
+      <button id="mode-bestsellers" onclick="switchProductsMode('bestsellers')">🌟 All Bestsellers</button>
     </div>
 
     <div class="filter-bar">

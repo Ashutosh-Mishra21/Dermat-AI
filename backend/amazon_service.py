@@ -195,3 +195,26 @@ async def search_products(matches: List[Dict[str, Any]]) -> List[Dict[str, Any]]
         tasks = [_search_one(client, headers, m) for m in norm]
         results = await asyncio.gather(*tasks, return_exceptions=False)
     return [r for r in results if r]
+
+
+# Curated India-popular skincare queries for the "All Bestsellers" view.
+# These are chosen to cover the common concerns shoppers care about.
+_BESTSELLER_QUERIES: List[Dict[str, Any]] = [
+    {"query": "Minimalist Niacinamide 10% serum", "matchedActive": "Niacinamide 10%", "targetConcern": "acne", "category": "serum"},
+    {"query": "Minimalist Salicylic Acid 2% BHA toner", "matchedActive": "Salicylic Acid 2%", "targetConcern": "acne", "category": "toner"},
+    {"query": "The Derma Co 10% Vitamin C serum", "matchedActive": "Vitamin C 10%", "targetConcern": "pigmentation", "category": "serum"},
+    {"query": "The Derma Co Hyaluronic Acid serum", "matchedActive": "Hyaluronic Acid", "targetConcern": "hydration", "category": "serum"},
+    {"query": "Dot & Key Vitamin C E serum", "matchedActive": "Vitamin C + E", "targetConcern": "pigmentation", "category": "serum"},
+    {"query": "Plum Green Tea face wash", "matchedActive": "Cleanser", "targetConcern": "general care", "category": "cleanser"},
+    {"query": "Cetaphil Gentle Skin Cleanser", "matchedActive": "Cleanser", "targetConcern": "general care", "category": "cleanser"},
+    {"query": "CeraVe Moisturising Cream", "matchedActive": "Moisturizer", "targetConcern": "general care", "category": "moisturizer"},
+    {"query": "Foxtale Daily Hydrating moisturizer", "matchedActive": "Moisturizer", "targetConcern": "hydration", "category": "moisturizer"},
+    {"query": "Re'equil Sunscreen SPF 50", "matchedActive": "Sunscreen SPF 50", "targetConcern": "uv protection", "category": "sunscreen"},
+    {"query": "Minimalist Sunscreen SPF 50 Multi-Vitamins", "matchedActive": "Sunscreen SPF 50", "targetConcern": "uv protection", "category": "sunscreen"},
+    {"query": "Minimalist Retinol 0.3% serum", "matchedActive": "Retinol 0.3%", "targetConcern": "aging", "category": "serum"},
+]
+
+
+async def get_bestsellers() -> List[Dict[str, Any]]:
+    """Return a curated list of popular India skincare products with live prices."""
+    return await search_products(_BESTSELLER_QUERIES)

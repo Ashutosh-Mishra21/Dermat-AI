@@ -12,7 +12,7 @@ from datetime import datetime, timezone
 from contextlib import asynccontextmanager
 
 from skin_analysis import analyze_skin
-from amazon_service import search_products
+from amazon_service import search_products, get_bestsellers
 
 ROOT_DIR = Path(__file__).parent
 load_dotenv(ROOT_DIR / ".env")
@@ -126,6 +126,13 @@ async def products_search(payload: ProductQueryPayload) -> Dict[str, Any]:
 
     rich_matches = rich_matches[:12]
     products = await search_products(rich_matches)
+    return {"products": products}
+
+
+@api_router.get("/bestsellers")
+async def bestsellers_endpoint() -> Dict[str, Any]:
+    """Curated list of popular skincare products on Amazon.in (no analysis required)."""
+    products = await get_bestsellers()
     return {"products": products}
 
 

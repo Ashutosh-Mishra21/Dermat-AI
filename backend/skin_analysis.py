@@ -118,11 +118,11 @@ async def _call_siliconflow(user_msg: str) -> Optional[Dict[str, Any]]:
             {"role": "user", "content": user_msg},
         ],
         "temperature": 0.4,
-        "max_tokens": 2000,
+        "max_tokens": 4000,
         "response_format": {"type": "json_object"},
     }
     try:
-        async with httpx.AsyncClient(timeout=60.0) as client:
+        async with httpx.AsyncClient(timeout=90.0) as client:
             r = await client.post(SILICONFLOW_URL, headers=headers, json=payload)
             r.raise_for_status()
             data = r.json()
@@ -166,10 +166,11 @@ async def _call_openrouter(
             {"role": "user", "content": user_content},
         ],
         "temperature": 0.4,
-        "max_tokens": 2000,
+        "max_tokens": 4000,
+        "response_format": {"type": "json_object"},
     }
     try:
-        async with httpx.AsyncClient(timeout=90.0) as client:
+        async with httpx.AsyncClient(timeout=120.0) as client:
             r = await client.post(OPENROUTER_URL, headers=headers, json=payload)
             r.raise_for_status()
             data = r.json()
@@ -260,7 +261,7 @@ def _fallback_response(quiz: Dict[str, Any]) -> Dict[str, Any]:
 async def analyze_skin(
     quiz: Dict[str, Any], image_base64: Optional[str] = None
 ) -> Dict[str, Any]:
-    """Run skin analysis with SiliconFlow primary, OpenRouter fallback."""
+    """Run skin analysis with OpenRouter Gemini primary, SiliconFlow fallback."""
     user_msg = _build_user_message(quiz)
 
     # If photo provided, vision is required → use OpenRouter (Gemini) directly
@@ -271,16 +272,16 @@ async def analyze_skin(
             return _ensure_relevance(result, quiz)
         logger.warning("Gemini vision failed, falling back to SiliconFlow (text only)")
 
-    # Primary: SiliconFlow (text)
-    result = await _call_siliconflow(user_msg)
-    if result:
-        result["_source"] = "siliconflow-gpt-oss"
-        return _ensure_relevance(result, quiz)
-
-    # Fallback: OpenRouter text
+    # Primary: OpenRouter Gemini 2.5 Flash (text)
     result = await _call_openrouter(user_msg, image_base64=None)
     if result:
         result["_source"] = "openrouter-gemini"
+        return _ensure_relevance(result, quiz)
+
+    # Fallback: SiliconFlow GPT OSS 120B
+    result = await _call_siliconflow(user_msg)
+    if result:
+        result["_source"] = "siliconflow-gpt-oss"
         return _ensure_relevance(result, quiz)
 
     # Final fallback: static response
@@ -367,13 +368,81 @@ def _query_for_active(active_name: str) -> str:
 def _ensure_relevance(result: Dict[str, Any], quiz: Dict[str, Any]) -> Dict[str, Any]:
     """
     Post-process the AI response so the products page always shows relevant items:
-      1. Build productMatches from each recommended active (1:1 mapping).
-      2. Augment with cleanser, moisturizer, sunscreen essentials if missing.
-      3. Keep the AI's productMatches if present, but supplement gaps.
+      1. Normalize field name variations (snake_case → camelCase, alt names).
+      2. Build productMatches from each recommended active (1:1 mapping).
+      3. Augment with cleanser, moisturizer, sunscreen essentials if missing.
       4. Backwards-compat: also publish productQueries (flat list of search strings).
     """
     if not isinstance(result, dict):
         return result
+
+    # ---- 0. Normalize field-name variants the AI may emit ----
+    aliases = {
+        "skinType": ["skin_type", "skintype"],
+        "fitzpatrick": ["fitzpatrick_type", "fitzpatrickType", "fitz"],
+        "primaryConcern": ["primary_concern", "concern"],
+        "uvRisk": ["uv_risk", "uvrisk"],
+        "photoInsights": ["photo_insights", "photoInsight", "photo_insight"],
+        "actives": ["recommendedActives", "recommended_actives", "ingredients"],
+        "amRoutine": ["am_routine", "morningRoutine", "morning_routine", "amSteps"],
+        "pmRoutine": ["pm_routine", "eveningRoutine", "evening_routine", "pmSteps"],
+        "incompatibilities": ["incompatibility", "warnings", "doNotMix"],
+        "contraindications": ["contraindication", "cautions"],
+        "productMatches": ["product_matches", "productRecommendations", "products"],
+    }
+    for canonical, alts in aliases.items():
+        if canonical in result and result[canonical]:
+            continue
+        for alt in alts:
+            if alt in result and result[alt]:
+                result[canonical] = result[alt]
+                break
+
+    # Normalize sub-fields in actives (concentration, format, moa, targetConcern)
+    norm_actives = []
+    for a in (result.get("actives") or []):
+        if not isinstance(a, dict):
+            continue
+        norm_actives.append({
+            "name": a.get("name") or a.get("ingredient") or a.get("active") or "",
+            "concentration": a.get("concentration") or a.get("strength") or "",
+            "format": a.get("format") or a.get("formulation") or a.get("type") or "",
+            "moa": a.get("moa") or a.get("mechanism") or a.get("mechanismOfAction") or a.get("rationale") or "",
+            "targetConcern": a.get("targetConcern") or a.get("target_concern") or a.get("concern") or "",
+        })
+    if norm_actives:
+        result["actives"] = norm_actives
+
+    # Normalize routine steps (step, product, note)
+    def _norm_routine(items):
+        out = []
+        for s in (items or []):
+            if not isinstance(s, dict):
+                continue
+            out.append({
+                "step": s.get("step") or s.get("name") or s.get("title") or "",
+                "product": s.get("product") or s.get("recommendation") or s.get("description") or "",
+                "note": s.get("note") or s.get("notes") or s.get("tip") or s.get("instruction") or "",
+            })
+        return out
+    if result.get("amRoutine"):
+        result["amRoutine"] = _norm_routine(result["amRoutine"])
+    if result.get("pmRoutine"):
+        result["pmRoutine"] = _norm_routine(result["pmRoutine"])
+
+    # If AI completely omitted actives/routines, borrow from fallback so the UI is never empty
+    if not result.get("actives"):
+        result["actives"] = _fallback_response(quiz)["actives"]
+    if not result.get("amRoutine"):
+        result["amRoutine"] = _fallback_response(quiz)["amRoutine"]
+    if not result.get("pmRoutine"):
+        result["pmRoutine"] = _fallback_response(quiz)["pmRoutine"]
+    if not result.get("incompatibilities"):
+        result["incompatibilities"] = _fallback_response(quiz)["incompatibilities"]
+    if not result.get("contraindications"):
+        result["contraindications"] = _fallback_response(quiz)["contraindications"]
+    if not result.get("uvRisk"):
+        result["uvRisk"] = _fallback_response(quiz)["uvRisk"]
 
     actives = result.get("actives") or []
     concerns = quiz.get("concerns") or []

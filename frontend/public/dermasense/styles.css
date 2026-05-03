@@ -433,9 +433,71 @@ nav {
 
 input[type=range] {
   width: 100%;
-  accent-color: var(--sage);
-  height: 4px;
+  -webkit-appearance: none;
+  -moz-appearance: none;
+  appearance: none;
+  height: 6px;
+  border-radius: 100px;
+  background: linear-gradient(to right, var(--sage) 0%, var(--sage) var(--range-fill, 50%), var(--border) var(--range-fill, 50%), var(--border) 100%);
+  outline: none;
   cursor: pointer;
+  margin: 12px 0 6px;
+  transition: background 0.15s ease;
+}
+
+input[type=range]::-webkit-slider-runnable-track {
+  height: 6px;
+  border-radius: 100px;
+  background: transparent;
+}
+
+input[type=range]::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  appearance: none;
+  width: 22px;
+  height: 22px;
+  border-radius: 50%;
+  background: var(--white);
+  border: 3px solid var(--sage);
+  box-shadow: 0 2px 6px rgba(28, 43, 45, 0.18);
+  cursor: pointer;
+  margin-top: -8px;
+  transition: transform 0.15s ease, box-shadow 0.15s ease;
+}
+
+input[type=range]::-webkit-slider-thumb:hover {
+  transform: scale(1.1);
+  box-shadow: 0 3px 10px rgba(107, 143, 113, 0.45);
+}
+
+input[type=range]::-moz-range-track {
+  height: 6px;
+  border-radius: 100px;
+  background: var(--border);
+}
+
+input[type=range]::-moz-range-progress {
+  height: 6px;
+  border-radius: 100px;
+  background: var(--sage);
+}
+
+input[type=range]::-moz-range-thumb {
+  width: 22px;
+  height: 22px;
+  border-radius: 50%;
+  background: var(--white);
+  border: 3px solid var(--sage);
+  box-shadow: 0 2px 6px rgba(28, 43, 45, 0.18);
+  cursor: pointer;
+  transition: transform 0.15s ease;
+}
+
+input[type=range]::-moz-range-thumb:hover { transform: scale(1.1); }
+
+input[type=range]:focus { outline: none; }
+input[type=range]:focus::-webkit-slider-thumb {
+  box-shadow: 0 0 0 4px rgba(107, 143, 113, 0.18), 0 2px 6px rgba(28, 43, 45, 0.18);
 }
 
 .range-track { display: flex; justify-content: space-between; font-size: 11px; color: var(--muted); margin-top: 4px; }
@@ -895,6 +957,46 @@ textarea { resize: vertical; min-height: 90px; }
   text-transform: capitalize;
 }
 
+/* Mode toggle (Recommended / All Bestsellers) */
+.mode-toggle {
+  display: inline-flex;
+  background: var(--white);
+  border: 1px solid var(--border);
+  border-radius: 100px;
+  padding: 4px;
+  gap: 2px;
+  margin-bottom: 1.25rem;
+}
+.mode-toggle button {
+  border: none;
+  background: transparent;
+  padding: 8px 18px;
+  border-radius: 100px;
+  font-family: var(--font-sans);
+  font-size: 13px;
+  font-weight: 500;
+  color: var(--muted);
+  cursor: pointer;
+  transition: background 0.2s, color 0.2s;
+}
+.mode-toggle button.active {
+  background: var(--sage);
+  color: var(--white);
+  font-weight: 600;
+}
+.mode-toggle button:hover:not(.active) {
+  color: var(--sage);
+  background: var(--sage-light);
+}
+
+/* Diet "Other" custom input */
+.diet-custom-wrap {
+  margin-top: 10px;
+}
+.diet-custom-wrap.hidden {
+  display: none;
+}
+
 /* Dermatologist finder modal (Google CSE) */
 .derm-modal {
   display: none;
@@ -993,6 +1095,11 @@ textarea { resize: vertical; min-height: 90px; }
 .derm-modal .gsc-above-wrapper-area,
 .derm-modal .gsc-result-info { color: var(--muted) !important; font-size: 12px !important; }
 .derm-modal .gs-title, .derm-modal .gs-title b { color: var(--sage) !important; }
+
+/* Disable Google CSE's full-screen autocomplete dropdown — it is appended to
+   document.body and breaks layout in our modal. Search still works without it. */
+.gssb_c, .gssb_a, .gssb_e, .gssb_m { display: none !important; }
+table.gstl_50.gssb_c { display: none !important; }
 
 /* EDUCATION */
 .edu-wrap {

@@ -95,14 +95,43 @@ function updateSlider(outId, val, labels) {
   const label = labels[parseInt(val) - 1];
   document.getElementById(outId).textContent = label;
   state.sun = label;
+  // Update green fill on track
+  const input = document.querySelector(`input[oninput*="${outId}"]`);
+  if (input) {
+    const min = parseFloat(input.min) || 1;
+    const max = parseFloat(input.max) || 5;
+    const pct = ((parseFloat(val) - min) / (max - min)) * 100;
+    input.style.setProperty("--range-fill", pct + "%");
+  }
 }
 
 function updateSleep(val) {
   document.getElementById("sleep-out").textContent = val + " hrs";
   state.sleep = parseFloat(val);
+  const input = document.querySelector('input[oninput*="updateSleep"]');
+  if (input) {
+    const min = parseFloat(input.min) || 4;
+    const max = parseFloat(input.max) || 10;
+    const pct = ((parseFloat(val) - min) / (max - min)) * 100;
+    input.style.setProperty("--range-fill", pct + "%");
+  }
 }
 
 function updateDiet(val) {
+  if (val === "__custom__") {
+    // Reveal the custom input — actual diet text comes from updateDietCustom()
+    const wrap = document.getElementById("diet-custom-wrap");
+    if (wrap) wrap.classList.remove("hidden");
+    const input = document.getElementById("diet-custom-input");
+    state.diet = input && input.value ? input.value : "";
+  } else {
+    const wrap = document.getElementById("diet-custom-wrap");
+    if (wrap) wrap.classList.add("hidden");
+    state.diet = val;
+  }
+}
+
+function updateDietCustom(val) {
   state.diet = val;
 }
 
@@ -188,6 +217,12 @@ async function generateResults() {
     ];
   }
   loadAmazonProducts(matches);
+  // Auto-select "Recommended" mode now that we have personalized products
+  productsMode = "recommended";
+  const recBtn = document.getElementById("mode-recommended");
+  const bestBtn = document.getElementById("mode-bestsellers");
+  if (recBtn) recBtn.classList.add("active");
+  if (bestBtn) bestBtn.classList.remove("active");
 }
 
 /* ---------- Render results ---------- */
@@ -279,9 +314,9 @@ function renderResults() {
   const srcEl = document.getElementById("source-tag");
   if (srcEl && r && r._source) {
     let label = "AI analysis";
-    if (r._source.includes("siliconflow")) label = "Powered by GPT OSS 120B";
-    else if (r._source.includes("vision")) label = "Powered by Gemini 2.5 Flash (Vision)";
+    if (r._source.includes("vision")) label = "Powered by Gemini 2.5 Flash (Vision)";
     else if (r._source.includes("openrouter")) label = "Powered by Gemini 2.5 Flash";
+    else if (r._source.includes("siliconflow")) label = "Powered by GPT OSS 120B (fallback)";
     else if (r._source === "fallback") label = "Default recommendations (add API keys to enable AI)";
     srcEl.textContent = label;
   }
@@ -420,13 +455,64 @@ function switchEduTab(el, id) {
 function renderEmptyProductsInitial() {
   const grid = document.getElementById("product-grid");
   if (!grid) return;
-  grid.innerHTML = `
-    <div class="empty-state">
-      <div class="empty-icon">🔍</div>
-      <h3>Complete your skin analysis first</h3>
-      <p>Take the quick 6-step quiz to generate personalized product recommendations from Amazon India.</p>
-      <button class="btn-primary" onclick="showPage('quiz')">Start Skin Analysis →</button>
-    </div>`;
+  // Auto-load bestsellers when user lands on Products without doing analysis
+  loadBestsellers();
+}
+
+/* ---------- Bestsellers (browse without analysis) ---------- */
+let productsMode = "recommended"; // 'recommended' | 'bestsellers'
+let bestsellerProducts = [];
+
+async function loadBestsellers() {
+  const grid = document.getElementById("product-grid");
+  if (!grid) return;
+  grid.innerHTML = renderSkeletonCards(9);
+  try {
+    const res = await fetch(`${API_BASE}/api/bestsellers`);
+    const data = await res.json();
+    bestsellerProducts = data.products || [];
+  } catch (e) {
+    console.error("Bestsellers fetch failed:", e);
+    bestsellerProducts = [];
+  }
+  if (bestsellerProducts.length === 0) {
+    grid.innerHTML = `
+      <div class="empty-state">
+        <div class="empty-icon">🔑</div>
+        <h3>Live product data unavailable</h3>
+        <p>Add your <code>OPENWEB_NINJA_API_KEY</code> to the backend <code>.env</code> file to fetch real-time prices from Amazon.in.</p>
+      </div>`;
+    return;
+  }
+  renderProducts(bestsellerProducts);
+}
+
+function switchProductsMode(mode) {
+  productsMode = mode;
+  document.getElementById("mode-recommended").classList.toggle("active", mode === "recommended");
+  document.getElementById("mode-bestsellers").classList.toggle("active", mode === "bestsellers");
+
+  if (mode === "recommended") {
+    if (amazonProducts && amazonProducts.length > 0) {
+      renderProducts(amazonProducts);
+    } else {
+      const grid = document.getElementById("product-grid");
+      grid.innerHTML = `
+        <div class="empty-state">
+          <div class="empty-icon">🔍</div>
+          <h3>Take the skin analysis first</h3>
+          <p>Get personalized product recommendations matched to your skin type and concerns.</p>
+          <button class="btn-primary" onclick="showPage('quiz')">Start Skin Analysis →</button>
+        </div>`;
+    }
+  } else {
+    // Bestsellers mode
+    if (bestsellerProducts.length > 0) {
+      renderProducts(bestsellerProducts);
+    } else {
+      loadBestsellers();
+    }
+  }
 }
 
 document.addEventListener("DOMContentLoaded", () => {
