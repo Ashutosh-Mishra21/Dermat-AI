@@ -169,23 +169,25 @@ async function generateResults() {
   renderResults();
   showPage("results");
 
-  // Kick off Amazon search in background — always use some queries so products render
-  // even if the AI response was missing the productQueries field.
-  let queries = (analysisResult && analysisResult.productQueries) || [];
-  if (!queries.length) {
-    queries = [
-      "The Ordinary Niacinamide 10% Zinc 1%",
-      "Minimalist Niacinamide serum",
-      "CeraVe Moisturising Cream",
-      "Differin Adapalene Gel",
-      "Dot & Key Vitamin C serum",
-      "La Roche-Posay Effaclar",
-      "The Derma Co Hyaluronic Acid",
-      "Minimalist Salicylic Acid 2% toner",
-      "Neutrogena Ultra Sheer SPF 50",
+  // Kick off Amazon search in background — prefer rich productMatches (with metadata),
+  // fall back to plain productQueries, then a static default if AI omitted both.
+  let matches = (analysisResult && analysisResult.productMatches) || [];
+  if (!matches.length) {
+    const queries = (analysisResult && analysisResult.productQueries) || [];
+    matches = queries.map((q) => ({ query: q }));
+  }
+  if (!matches.length) {
+    matches = [
+      { query: "Minimalist Niacinamide 10% Zinc serum", matchedActive: "Niacinamide 10%", targetConcern: "acne", category: "serum", tier: "affordable" },
+      { query: "Minimalist Salicylic Acid 2% toner", matchedActive: "Salicylic Acid 2%", targetConcern: "acne", category: "toner", tier: "affordable" },
+      { query: "The Derma Co Hyaluronic Acid serum", matchedActive: "Hyaluronic Acid", targetConcern: "dehydration", category: "serum", tier: "affordable" },
+      { query: "Dot & Key Vitamin C serum", matchedActive: "Vitamin C", targetConcern: "pigmentation", category: "serum", tier: "affordable" },
+      { query: "Cetaphil Gentle Skin Cleanser", matchedActive: "Cleanser", targetConcern: "general care", category: "cleanser", tier: "affordable" },
+      { query: "CeraVe Moisturising Cream", matchedActive: "Moisturizer", targetConcern: "general care", category: "moisturizer", tier: "affordable" },
+      { query: "Re'equil Sunscreen SPF 50", matchedActive: "Sunscreen SPF 50+", targetConcern: "uv protection", category: "sunscreen", tier: "mid" },
     ];
   }
-  loadAmazonProducts(queries);
+  loadAmazonProducts(matches);
 }
 
 /* ---------- Render results ---------- */
@@ -286,16 +288,16 @@ function renderResults() {
 }
 
 /* ---------- Amazon product loading ---------- */
-async function loadAmazonProducts(queries) {
+async function loadAmazonProducts(matches) {
   const grid = document.getElementById("product-grid");
   if (!grid) return;
-  grid.innerHTML = renderSkeletonCards(Math.min(queries.length, 9));
+  grid.innerHTML = renderSkeletonCards(Math.min(matches.length, 9));
 
   try {
     const res = await fetch(`${API_BASE}/api/products-search`, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ queries }),
+      body: JSON.stringify({ matches }),
     });
     const data = await res.json();
     amazonProducts = data.products || [];
@@ -350,11 +352,20 @@ function renderProducts(list) {
       const link = p.url
         ? `<a class="product-link" href="${escapeHtml(p.url)}" target="_blank" rel="noopener noreferrer">View on Amazon →</a>`
         : "";
+      // Relevance pill — shows the AI-matched ingredient/concern this product fulfills
+      const matchPill = p.matchedActive
+        ? `<div class="product-match" title="${escapeHtml(p.targetConcern || '')}">
+             <span class="match-label">Matches:</span>
+             <span class="match-value">${escapeHtml(p.matchedActive)}</span>
+             ${p.targetConcern ? `<span class="match-concern">· ${escapeHtml(p.targetConcern)}</span>` : ""}
+           </div>`
+        : "";
       return `
-        <div class="product-card" data-tier="${escapeHtml(p.tier)}">
+        <div class="product-card" data-tier="${escapeHtml(p.tier || '')}" data-concern="${escapeHtml((p.targetConcern || '').toLowerCase())}" data-category="${escapeHtml((p.category || '').toLowerCase())}">
           <div class="product-img-wrap">${imgContent}</div>
           <div class="product-body">
-            <div class="product-tier ${escapeHtml(p.tier)}">${escapeHtml(p.tierlabel)}</div>
+            <div class="product-tier ${escapeHtml(p.tier || '')}">${escapeHtml(p.tierlabel || '')}</div>
+            ${matchPill}
             <div class="product-name">${escapeHtml(p.name)}</div>
             <div class="product-brand">${escapeHtml(p.brand || "")}</div>
             ${rating}
@@ -371,10 +382,28 @@ function renderProducts(list) {
 
 function filterProducts() {
   const selects = document.querySelectorAll(".filter-select");
+  const concern = selects[0] ? selects[0].value : "all";
   const budget = selects[1] ? selects[1].value : "all";
+
   let filtered = amazonProducts.slice();
   if (budget !== "all") {
     filtered = filtered.filter((p) => p.tier === budget);
+  }
+  if (concern !== "all") {
+    filtered = filtered.filter((p) => {
+      const tc = (p.targetConcern || "").toLowerCase();
+      const m = (p.matchedActive || "").toLowerCase();
+      const haystack = `${tc} ${m}`;
+      // Map filter values to keyword matchers
+      const map = {
+        acne: ["acne", "salicylic", "bha", "adapalene", "benzoyl", "azelaic"],
+        pigmentation: ["pigment", "vitamin c", "ascorbic", "azelaic", "tranexamic", "alpha arbutin", "kojic", "niacinamide"],
+        aging: ["wrinkle", "aging", "retinol", "retinoid", "peptide", "collagen"],
+        hydration: ["dehydration", "hydration", "hyaluronic", "ceramide", "moisturiz", "moisturis", "barrier", "general care"],
+      };
+      const kws = map[concern] || [concern];
+      return kws.some((kw) => haystack.includes(kw));
+    });
   }
   renderProducts(filtered);
 }

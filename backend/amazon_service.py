@@ -105,9 +105,14 @@ def _format_inr(value: Optional[float]) -> str:
 
 
 async def _search_one(
-    client: httpx.AsyncClient, headers: Dict[str, str], query: str
+    client: httpx.AsyncClient,
+    headers: Dict[str, str],
+    match: Dict[str, Any],
 ) -> Optional[Dict[str, Any]]:
-    """Fetch the top Amazon.in product for a query."""
+    """Fetch the top Amazon.in product for a query, preserving match metadata."""
+    query = match.get("query") or ""
+    if not query:
+        return None
     params = {
         "query": query,
         "page": "1",
@@ -134,11 +139,12 @@ async def _search_one(
         price_val = _parse_price(price_raw)
         original_raw = p.get("product_original_price")
         url = p.get("product_url") or ""
-        # Build affiliate-less direct URL with ASIN if needed
         asin = p.get("asin")
         if not url and asin:
             url = f"https://www.amazon.in/dp/{asin}"
-        tier = _tier_from_price(price_val)
+
+        # If AI suggested a tier, prefer it; otherwise derive from live price
+        tier = (match.get("tier") or "").lower() or _tier_from_price(price_val)
         actives_raw = p.get("product_title", "")
         return {
             "query": query,
@@ -156,19 +162,36 @@ async def _search_one(
             "tierlabel": _tier_label(tier),
             "icon": _icon_for_query(query),
             "badge": "Prime" if p.get("is_prime") else "Amazon.in",
+            # Relevance metadata — drives "For: <ingredient>" labels and concern filters
+            "matchedActive": match.get("matchedActive") or "",
+            "targetConcern": match.get("targetConcern") or "",
+            "category": match.get("category") or "",
         }
     except Exception as e:
         logger.warning(f"Amazon search error for '{query}': {e}")
         return None
 
 
-async def search_products(queries: List[str]) -> List[Dict[str, Any]]:
-    """Run parallel searches across multiple product queries (Amazon.in)."""
+async def search_products(matches: List[Dict[str, Any]]) -> List[Dict[str, Any]]:
+    """Run parallel Amazon.in searches across rich match objects.
+
+    Each match is a dict with at least {"query": str} and optional metadata
+    (matchedActive, targetConcern, category, tier).
+    """
     headers = _headers()
     if not headers:
         logger.info("OpenWeb Ninja API key not set — returning empty list")
         return []
+
+    # Backwards-compat: accept plain strings too
+    norm: List[Dict[str, Any]] = []
+    for m in matches:
+        if isinstance(m, str):
+            norm.append({"query": m})
+        elif isinstance(m, dict):
+            norm.append(m)
+
     async with httpx.AsyncClient() as client:
-        tasks = [_search_one(client, headers, q) for q in queries]
+        tasks = [_search_one(client, headers, m) for m in norm]
         results = await asyncio.gather(*tasks, return_exceptions=False)
     return [r for r in results if r]

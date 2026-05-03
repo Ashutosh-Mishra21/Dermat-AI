@@ -98,17 +98,34 @@ async def analyze_skin_endpoint(payload: QuizPayload) -> Dict[str, Any]:
 
 
 # ---------- Amazon products ----------
+class ProductMatch(BaseModel):
+    query: str
+    matchedActive: Optional[str] = ""
+    targetConcern: Optional[str] = ""
+    category: Optional[str] = ""
+    tier: Optional[str] = ""
+
+
 class ProductQueryPayload(BaseModel):
-    queries: List[str]
+    # Either send `queries` (list of strings) OR `matches` (rich objects). If both,
+    # `matches` wins. Keeping `queries` for backwards-compat.
+    queries: Optional[List[str]] = None
+    matches: Optional[List[ProductMatch]] = None
 
 
 @api_router.post("/products-search")
 async def products_search(payload: ProductQueryPayload) -> Dict[str, Any]:
-    if not payload.queries:
+    rich_matches: List[Dict[str, Any]] = []
+    if payload.matches:
+        rich_matches = [m.model_dump() for m in payload.matches]
+    elif payload.queries:
+        rich_matches = [{"query": q} for q in payload.queries]
+
+    if not rich_matches:
         return {"products": []}
-    # Limit to a reasonable number
-    queries = payload.queries[:12]
-    products = await search_products(queries)
+
+    rich_matches = rich_matches[:12]
+    products = await search_products(rich_matches)
     return {"products": products}
 
 

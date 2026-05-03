@@ -403,10 +403,16 @@
 <!-- PRODUCTS PAGE -->
 <div class="page" id="page-products">
   <div class="products-wrap">
-    <div class="section-header" style="text-align:left;margin-bottom:1.5rem;">
-      <div class="section-label">Product Recommendations</div>
-      <h2 style="font-family:var(--font-serif);font-size:2rem;">Matched on Amazon.in</h2>
-      <p style="color:var(--muted); margin-top:0.4rem; font-size:14px;">Live prices in Indian Rupees · Click any card to buy directly on Amazon.</p>
+    <div class="results-header" style="margin-bottom:1.5rem;">
+      <div>
+        <div class="section-label">Product Recommendations</div>
+        <h2 style="font-family:var(--font-serif);font-size:2rem;">Matched on Amazon.in</h2>
+        <p style="color:var(--muted); margin-top:0.4rem; font-size:14px;">Live prices in Indian Rupees · Click any card to buy directly on Amazon.</p>
+      </div>
+      <div class="products-header-actions">
+        <button class="btn-secondary" onclick="showPage('results')">← Back to Analysis</button>
+        <button class="btn-secondary" onclick="showPage('quiz')">↻ Retake Quiz</button>
+      </div>
     </div>
 
     <div class="filter-bar">
