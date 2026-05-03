@@ -390,3 +390,30 @@ function renderEmptyProductsInitial() {
 document.addEventListener("DOMContentLoaded", () => {
   renderEmptyProductsInitial();
 });
+
+/* ---------- Dermatologist finder (Google CSE) ---------- */
+function openDermFinder() {
+  const modal = document.getElementById("derm-modal");
+  if (!modal) return;
+  modal.classList.add("active");
+  document.body.style.overflow = "hidden";
+  // Pre-fill search with a helpful query once the CSE widget has mounted
+  setTimeout(() => {
+    const input = modal.querySelector("input.gsc-input, input.gsc-input-box input, .gsc-input");
+    if (input && !input.value) {
+      input.value = "dermatologist near me";
+    }
+  }, 800);
+}
+
+function closeDermFinder() {
+  const modal = document.getElementById("derm-modal");
+  if (!modal) return;
+  modal.classList.remove("active");
+  document.body.style.overflow = "";
+}
+
+// Close modal on Escape
+document.addEventListener("keydown", (e) => {
+  if (e.key === "Escape") closeDermFinder();
+});

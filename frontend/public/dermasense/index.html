@@ -50,7 +50,7 @@
       <strong>Medical Disclaimer</strong>
       DermaSense AI provides educational guidance based on dermatological principles. This is not a substitute for professional dermatological consultation. Always consult a board-certified dermatologist for medical skin conditions.
       <br>
-      <a class="derm-link" href="#">Find a Dermatologist →</a>
+      <a class="derm-link" href="#" onclick="openDermFinder(); return false;">Find a Dermatologist →</a>
     </div>
   </div>
 
@@ -543,6 +543,25 @@
   </div>
 </div>
 
+<!-- DERMATOLOGIST FINDER MODAL -->
+<div class="derm-modal" id="derm-modal" onclick="if(event.target===this) closeDermFinder()">
+  <div class="derm-modal-card">
+    <div class="derm-modal-header">
+      <div>
+        <h3>Find a Dermatologist</h3>
+        <p>Search verified dermatologists & clinics near you</p>
+      </div>
+      <button class="derm-close-btn" onclick="closeDermFinder()" aria-label="Close">✕</button>
+    </div>
+    <div class="derm-modal-body">
+      <div class="gcse-search"></div>
+    </div>
+    <div class="derm-modal-footer">
+      <span>🔒 Powered by Google — results are independent listings, not endorsements.</span>
+    </div>
+  </div>
+</div>
+
 <!-- LOADING OVERLAY -->
 <div class="loading-overlay" id="loading-overlay">
   <div class="loading-spinner"></div>
@@ -550,6 +569,8 @@
   <div class="loading-sub">Applying dermatological algorithms · Matching cosmeceutical science</div>
 </div>
 
+<!-- Google Custom Search Engine -->
+<script async src="https://cse.google.com/cse.js?cx=45404cf9200d6483a"></script>
 <script src="script.js"></script>
 </body>
 </html>
