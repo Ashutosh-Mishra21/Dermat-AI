@@ -232,7 +232,7 @@
 
         <div class="form-group">
           <label class="form-label">Diet quality</label>
-          <select class="select-input">
+          <select class="select-input" onchange="updateDiet(this.value)">
             <option>Balanced (fruits, veggies, lean protein)</option>
             <option>High in processed / sugary foods</option>
             <option>Dairy-heavy diet</option>
@@ -254,24 +254,24 @@
 
         <div class="form-group">
           <label class="form-label">Current cleanser (if any)</label>
-          <input type="text" class="text-input" placeholder="e.g. CeraVe Hydrating Cleanser, foam cleanser…">
+          <input type="text" class="text-input" oninput="updateCleanser(this.value)" placeholder="e.g. CeraVe Hydrating Cleanser, foam cleanser…">
         </div>
 
         <div class="form-group">
           <label class="form-label">Actives currently using (check all)</label>
           <div class="option-grid" style="margin-top:0.5rem;">
-            <button class="option-btn" style="font-size:12px;" onclick="this.classList.toggle('selected')">Retinol / Retinoids</button>
-            <button class="option-btn" style="font-size:12px;" onclick="this.classList.toggle('selected')">Vitamin C</button>
-            <button class="option-btn" style="font-size:12px;" onclick="this.classList.toggle('selected')">AHA / BHA</button>
-            <button class="option-btn" style="font-size:12px;" onclick="this.classList.toggle('selected')">Niacinamide</button>
-            <button class="option-btn" style="font-size:12px;" onclick="this.classList.toggle('selected')">Peptides</button>
-            <button class="option-btn" style="font-size:12px;" onclick="this.classList.toggle('selected')">Hyaluronic Acid</button>
+            <button class="option-btn" style="font-size:12px;" onclick="toggleActive(this, 'retinol')">Retinol / Retinoids</button>
+            <button class="option-btn" style="font-size:12px;" onclick="toggleActive(this, 'vitamin_c')">Vitamin C</button>
+            <button class="option-btn" style="font-size:12px;" onclick="toggleActive(this, 'aha_bha')">AHA / BHA</button>
+            <button class="option-btn" style="font-size:12px;" onclick="toggleActive(this, 'niacinamide')">Niacinamide</button>
+            <button class="option-btn" style="font-size:12px;" onclick="toggleActive(this, 'peptides')">Peptides</button>
+            <button class="option-btn" style="font-size:12px;" onclick="toggleActive(this, 'hyaluronic_acid')">Hyaluronic Acid</button>
           </div>
         </div>
 
         <div class="form-group">
           <label class="form-label">Any known allergies or sensitivities?</label>
-          <textarea class="text-input" placeholder="e.g. fragrance allergy, retinol irritation, latex…" style="min-height:70px;"></textarea>
+          <textarea class="text-input" oninput="updateAllergies(this.value)" placeholder="e.g. fragrance allergy, retinol irritation, latex…" style="min-height:70px;"></textarea>
         </div>
 
         <div class="form-group">
@@ -330,6 +330,7 @@
         <div class="badge badge-green" style="margin-bottom:0.5rem;">✦ Analysis Complete</div>
         <h2 class="results-title">Your Skin Profile</h2>
         <p class="results-subtitle">Personalized recommendations based on your dermatological assessment</p>
+        <div id="source-tag" class="source-tag">AI analysis</div>
       </div>
       <button class="btn-secondary" onclick="showPage('quiz')">← Retake Analysis</button>
     </div>
@@ -358,125 +359,35 @@
       <div class="profile-stat">
         <div class="stat-icon">☀️</div>
         <div class="stat-label">UV Risk</div>
-        <div class="stat-value">Moderate</div>
+        <div class="stat-value" id="res-uv">Moderate</div>
       </div>
+    </div>
+
+    <div id="photo-insights-box" class="warning-box" style="display:none; background:var(--sky-light); border-color:var(--sky-mid); margin-bottom:1.5rem;">
+      <span class="w-icon">📷</span>
+      <p></p>
     </div>
 
     <div class="full-result">
       <!-- Active Ingredients -->
       <div class="result-section">
         <h3>🧬 Recommended Actives</h3>
-
-        <div class="ingredient-tag">
-          <span class="ing-name">Niacinamide 10%</span>
-          <span class="ing-conc">10% concentration · Serum</span>
-          <span class="ing-moa">Regulates sebum, reduces PIH, strengthens barrier</span>
-        </div>
-
-        <div class="ingredient-tag">
-          <span class="ing-name">Salicylic Acid 2%</span>
-          <span class="ing-conc">2% concentration · Cleanser/Toner</span>
-          <span class="ing-moa">Oil-soluble BHA exfoliates inside follicles, unclogs pores</span>
-        </div>
-
-        <div class="ingredient-tag">
-          <span class="ing-name">Azelaic Acid 10%</span>
-          <span class="ing-conc">10% concentration · Gel/Cream</span>
-          <span class="ing-moa">Antibacterial, tyrosinase inhibitor, reduces post-inflammatory erythema</span>
-        </div>
-
-        <div class="ingredient-tag">
-          <span class="ing-name">Retinol 0.025%</span>
-          <span class="ing-conc">0.025% beginner dose · Night Serum</span>
-          <span class="ing-moa">Increases cell turnover, stimulates collagen, normalizes follicular keratinization</span>
-        </div>
-
-        <div class="ingredient-tag">
-          <span class="ing-name">Hyaluronic Acid</span>
-          <span class="ing-conc">Multi-weight · Serum</span>
-          <span class="ing-moa">Humectant binding up to 1000x its weight in water for barrier hydration</span>
-        </div>
-
-        <div class="warning-box">
+        <div id="actives-list"></div>
+        <div id="contra-box" class="warning-box" style="display:none;">
           <span class="w-icon">⚠️</span>
-          <p><strong>Contraindications noted:</strong> Retinol must be avoided if pregnant or breastfeeding. Do not combine salicylic acid with high-concentration retinol on the same night initially — introduce slowly. Always apply SPF 30+ in the AM when using retinoids or AHAs/BHAs.</p>
+          <p></p>
         </div>
       </div>
 
       <!-- Routine Builder -->
       <div class="result-section">
         <h3>🌅 Morning Routine (AM)</h3>
-        <div class="routine-timeline">
-          <div class="routine-step">
-            <div class="step-card">
-              <div class="step-name">1. Gentle Cleanser</div>
-              <div class="step-product">Low pH, non-stripping formula</div>
-              <div class="step-note">Avoid foaming SLS cleansers — they disrupt the acid mantle.</div>
-            </div>
-          </div>
-          <div class="routine-step">
-            <div class="step-card">
-              <div class="step-name">2. Niacinamide Serum</div>
-              <div class="step-product">10% Niacinamide + Zinc</div>
-              <div class="step-note">Apply to damp skin. Wait 60 sec before layering.</div>
-            </div>
-          </div>
-          <div class="routine-step">
-            <div class="step-card">
-              <div class="step-name">3. Lightweight Moisturizer</div>
-              <div class="step-product">Oil-free, non-comedogenic gel cream</div>
-              <div class="step-note">Hyaluronic acid base with ceramides for barrier support.</div>
-            </div>
-          </div>
-          <div class="routine-step">
-            <div class="step-card">
-              <div class="step-name">4. Sunscreen SPF 50+</div>
-              <div class="step-product">Broad-spectrum chemical or mineral</div>
-              <div class="step-note">Non-negotiable. Reapply every 2 hrs outdoors.</div>
-            </div>
-          </div>
-        </div>
+        <div class="routine-timeline" id="am-routine"></div>
 
         <h3 style="margin-top:2rem;">🌙 Evening Routine (PM)</h3>
-        <div class="routine-timeline">
-          <div class="routine-step">
-            <div class="step-card">
-              <div class="step-name">1. Double Cleanse</div>
-              <div class="step-product">Micellar water → gentle foaming cleanser</div>
-              <div class="step-note">Remove sunscreen/makeup fully before actives.</div>
-            </div>
-          </div>
-          <div class="routine-step">
-            <div class="step-card">
-              <div class="step-name">2. BHA Toner (3×/week)</div>
-              <div class="step-product">2% Salicylic Acid</div>
-              <div class="step-note">Alternate nights with retinol — not same night initially.</div>
-            </div>
-          </div>
-          <div class="routine-step">
-            <div class="step-card">
-              <div class="step-name">3. Retinol (2×/week)</div>
-              <div class="step-product">0.025% Retinol in moisturizing base</div>
-              <div class="step-note">Buffer with moisturizer underneath if sensitive ("sandwich method").</div>
-            </div>
-          </div>
-          <div class="routine-step">
-            <div class="step-card">
-              <div class="step-name">4. Barrier Moisturizer</div>
-              <div class="step-product">Ceramide + peptide cream</div>
-              <div class="step-note">Lock in actives and support overnight repair.</div>
-            </div>
-          </div>
-        </div>
+        <div class="routine-timeline" id="pm-routine"></div>
 
-        <div class="incompatible-row">
-          <span>⛔</span>
-          <span>Do not layer Vitamin C + Niacinamide at high concentrations — may cause temporary flushing. Use in AM/PM split instead.</span>
-        </div>
-        <div class="incompatible-row">
-          <span>⛔</span>
-          <span>Avoid using Retinol and high-strength AHA/BHA on the same evening until skin is acclimatized (minimum 4–6 weeks).</span>
-        </div>
+        <div id="incompatibilities"></div>
       </div>
     </div>
 
@@ -491,7 +402,8 @@
   <div class="products-wrap">
     <div class="section-header" style="text-align:left;margin-bottom:1.5rem;">
       <div class="section-label">Product Recommendations</div>
-      <h2 style="font-family:var(--font-serif);font-size:2rem;">Matched to your skin profile</h2>
+      <h2 style="font-family:var(--font-serif);font-size:2rem;">Matched on Amazon.in</h2>
+      <p style="color:var(--muted); margin-top:0.4rem; font-size:14px;">Live prices in Indian Rupees · Click any card to buy directly on Amazon.</p>
     </div>
 
     <div class="filter-bar">
@@ -505,9 +417,9 @@
       </select>
       <select class="filter-select" onchange="filterProducts()">
         <option value="all">All Budgets</option>
-        <option value="affordable">Affordable (&lt;$20)</option>
-        <option value="mid">Mid-range ($20–$60)</option>
-        <option value="luxury">Luxury ($60+)</option>
+        <option value="affordable">Affordable (&lt;₹1,500)</option>
+        <option value="mid">Mid-range (₹1,500–₹5,000)</option>
+        <option value="luxury">Luxury (₹5,000+)</option>
       </select>
       <select class="filter-select">
         <option>All formulas</option>
