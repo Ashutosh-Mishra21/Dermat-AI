@@ -120,7 +120,9 @@ async def _search_one(
             f"{BASE_URL}/search", headers=headers, params=params, timeout=25.0
         )
         if r.status_code != 200:
-            logger.warning(f"Amazon search failed [{r.status_code}] for '{query}': {r.text[:150]}")
+            logger.warning(
+                f"Amazon search failed [{r.status_code}] for '{query}': {r.text[:150]}"
+            )
             return None
         data = r.json()
         products = (data.get("data") or {}).get("products") or []

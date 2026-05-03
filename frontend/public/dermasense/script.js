@@ -170,6 +170,7 @@ async function generateResults() {
   showPage("results");
 
   // Kick off Amazon search in background — always use some queries so products render
+  // even if the AI response was missing the productQueries field.
   let queries = (analysisResult && analysisResult.productQueries) || [];
   if (!queries.length) {
     queries = [
