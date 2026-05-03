@@ -1,0 +1,643 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>DermaSense AI – Intelligent Skincare Platform</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;0,9..40,600;1,9..40,300&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="styles.css">
+</head>
+<body>
+
+<!-- NAV -->
+<nav>
+  <a class="nav-logo" href="#" onclick="showPage('home'); return false;">
+    <div class="logo-icon">
+      <svg viewBox="0 0 24 24"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-1 14H9V8h2v8zm4 0h-2V8h2v8z"/></svg>
+    </div>
+    <span class="logo-text">Derma<span>Sense</span> AI</span>
+  </a>
+  <ul class="nav-links">
+    <li><a href="#" onclick="showPage('home'); return false;" id="nav-home" class="active">Home</a></li>
+    <li><a href="#" onclick="showPage('quiz'); return false;" id="nav-quiz">Skin Analysis</a></li>
+    <li><a href="#" onclick="showPage('products'); return false;" id="nav-products">Products</a></li>
+    <li><a href="#" onclick="showPage('education'); return false;" id="nav-education">Learn</a></li>
+    <li><a href="#" class="nav-cta" onclick="showPage('quiz'); return false;">Start Analysis →</a></li>
+  </ul>
+</nav>
+
+<!-- HOME PAGE -->
+<div class="page active" id="page-home">
+  <div class="hero">
+    <div class="hero-badge">AI-Powered Dermatology</div>
+    <h1>Your skin deserves <em>science-backed</em> care</h1>
+    <p>Answer a few questions about your skin. Our AI, trained on dermatological principles and cosmeceutical science, creates your personalized regimen.</p>
+    <div class="hero-actions">
+      <button class="btn-primary" onclick="showPage('quiz')">
+        ✦ Analyze My Skin
+      </button>
+      <button class="btn-secondary" onclick="showPage('education')">
+        Learn the Science
+      </button>
+    </div>
+  </div>
+
+  <div class="disclaimer-banner">
+    <div class="disclaimer-icon">🩺</div>
+    <div class="disclaimer-text">
+      <strong>Medical Disclaimer</strong>
+      DermaSense AI provides educational guidance based on dermatological principles. This is not a substitute for professional dermatological consultation. Always consult a board-certified dermatologist for medical skin conditions.
+      <br>
+      <a class="derm-link" href="#">Find a Dermatologist →</a>
+    </div>
+  </div>
+
+  <div class="features">
+    <div class="section-header">
+      <div class="section-label">How It Works</div>
+      <h2>Dermatology meets artificial intelligence</h2>
+      <p>A systematic approach to understanding your skin through evidence-based science.</p>
+    </div>
+    <div class="feature-grid">
+      <div class="feature-card">
+        <div class="feature-icon" style="background:var(--sage-light);">🔬</div>
+        <h3>Skin Analysis</h3>
+        <p>A comprehensive questionnaire covering skin type, Fitzpatrick scale, concerns, and lifestyle factors.</p>
+      </div>
+      <div class="feature-card">
+        <div class="feature-icon" style="background:var(--sky-light);">🧬</div>
+        <h3>AI Recommendations</h3>
+        <p>Active ingredients with specific concentrations, mechanisms of action, and contraindication warnings.</p>
+      </div>
+      <div class="feature-card">
+        <div class="feature-icon" style="background:var(--amber-light);">⚗️</div>
+        <h3>Product Matching</h3>
+        <p>Curated products across luxury, mid-range, and affordable tiers — filtered by your exact needs.</p>
+      </div>
+      <div class="feature-card">
+        <div class="feature-icon" style="background:var(--coral-light);">🌙</div>
+        <h3>AM/PM Routines</h3>
+        <p>Personalized morning and evening routines with layering guidance and ingredient compatibility checks.</p>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- QUIZ PAGE -->
+<div class="page" id="page-quiz">
+  <div class="quiz-wrap">
+    <div class="quiz-progress">
+      <div class="progress-bar-wrap">
+        <div class="progress-bar-fill" id="progress-fill" style="width: 16%"></div>
+      </div>
+      <span class="progress-label" id="progress-label">Step 1 of 6</span>
+    </div>
+
+    <div class="quiz-card">
+
+      <!-- STEP 1: Skin Type -->
+      <div class="quiz-step active" id="step-1">
+        <h2>What's your skin type?</h2>
+        <p class="subtitle">Select the description that best matches how your skin behaves on a typical day.</p>
+        <div class="option-grid">
+          <button class="option-btn" onclick="selectOption(this, 'skintype', 'oily')">
+            <span class="opt-icon">💧</span>Oily
+          </button>
+          <button class="option-btn" onclick="selectOption(this, 'skintype', 'dry')">
+            <span class="opt-icon">🏜️</span>Dry
+          </button>
+          <button class="option-btn" onclick="selectOption(this, 'skintype', 'combination')">
+            <span class="opt-icon">⚖️</span>Combination
+          </button>
+          <button class="option-btn" onclick="selectOption(this, 'skintype', 'sensitive')">
+            <span class="opt-icon">🌸</span>Sensitive
+          </button>
+          <button class="option-btn" onclick="selectOption(this, 'skintype', 'normal')">
+            <span class="opt-icon">✨</span>Normal
+          </button>
+          <button class="option-btn" onclick="selectOption(this, 'skintype', 'acne')">
+            <span class="opt-icon">⚡</span>Acne-prone
+          </button>
+        </div>
+        <div class="quiz-nav">
+          <span></span>
+          <button class="btn-next" onclick="goStep(2)">Next <span>→</span></button>
+        </div>
+      </div>
+
+      <!-- STEP 2: Fitzpatrick -->
+      <div class="quiz-step" id="step-2">
+        <h2>Fitzpatrick Skin Type</h2>
+        <p class="subtitle">This scale helps assess UV sensitivity, pigmentation risk, and ingredient tolerance.</p>
+        <div class="fitzpatrick-grid">
+          <button class="fitz-btn" onclick="selectFitz(this, 'I')">
+            <div class="fitz-swatch" style="background:#F9E4D4;"></div>
+            <div style="font-size:10px;color:var(--muted)">Type I</div>
+            <div style="font-size:9px;color:var(--muted);margin-top:2px">Always burns</div>
+          </button>
+          <button class="fitz-btn" onclick="selectFitz(this, 'II')">
+            <div class="fitz-swatch" style="background:#F0C9A0;"></div>
+            <div style="font-size:10px;color:var(--muted)">Type II</div>
+            <div style="font-size:9px;color:var(--muted);margin-top:2px">Usually burns</div>
+          </button>
+          <button class="fitz-btn" onclick="selectFitz(this, 'III')">
+            <div class="fitz-swatch" style="background:#D4A76A;"></div>
+            <div style="font-size:10px;color:var(--muted)">Type III</div>
+            <div style="font-size:9px;color:var(--muted);margin-top:2px">Sometimes burns</div>
+          </button>
+          <button class="fitz-btn" onclick="selectFitz(this, 'IV')">
+            <div class="fitz-swatch" style="background:#A67850;"></div>
+            <div style="font-size:10px;color:var(--muted)">Type IV</div>
+            <div style="font-size:9px;color:var(--muted);margin-top:2px">Rarely burns</div>
+          </button>
+          <button class="fitz-btn" onclick="selectFitz(this, 'V')">
+            <div class="fitz-swatch" style="background:#7A4E2D;"></div>
+            <div style="font-size:10px;color:var(--muted)">Type V</div>
+            <div style="font-size:9px;color:var(--muted);margin-top:2px">Very rarely burns</div>
+          </button>
+          <button class="fitz-btn" onclick="selectFitz(this, 'VI')">
+            <div class="fitz-swatch" style="background:#3D1F10;"></div>
+            <div style="font-size:10px;color:var(--muted)">Type VI</div>
+            <div style="font-size:9px;color:var(--muted);margin-top:2px">Never burns</div>
+          </button>
+        </div>
+        <div class="quiz-nav">
+          <button class="btn-back" onclick="goStep(1)">← Back</button>
+          <button class="btn-next" onclick="goStep(3)">Next →</button>
+        </div>
+      </div>
+
+      <!-- STEP 3: Concerns -->
+      <div class="quiz-step" id="step-3">
+        <h2>What are your skin concerns?</h2>
+        <p class="subtitle multi-hint">Select all that apply — we'll prioritize and address each one.</p>
+        <div class="option-grid">
+          <button class="option-btn" onclick="toggleConcern(this, 'acne')"><span class="opt-icon">⚡</span>Acne</button>
+          <button class="option-btn" onclick="toggleConcern(this, 'pigmentation')"><span class="opt-icon">🎨</span>Pigmentation</button>
+          <button class="option-btn" onclick="toggleConcern(this, 'wrinkles')"><span class="opt-icon">🔍</span>Fine Lines</button>
+          <button class="option-btn" onclick="toggleConcern(this, 'dullness')"><span class="opt-icon">🌟</span>Dullness</button>
+          <button class="option-btn" onclick="toggleConcern(this, 'dehydration')"><span class="opt-icon">💦</span>Dehydration</button>
+          <button class="option-btn" onclick="toggleConcern(this, 'rosacea')"><span class="opt-icon">🌹</span>Rosacea</button>
+          <button class="option-btn" onclick="toggleConcern(this, 'pores')"><span class="opt-icon">🔵</span>Large Pores</button>
+          <button class="option-btn" onclick="toggleConcern(this, 'dark_circles')"><span class="opt-icon">👁️</span>Dark Circles</button>
+          <button class="option-btn" onclick="toggleConcern(this, 'texture')"><span class="opt-icon">🧩</span>Uneven Texture</button>
+        </div>
+        <div class="form-group" style="margin-top:1rem;">
+          <label class="form-label">Severity of primary concern</label>
+          <div class="severity-row">
+            <button class="severity-btn" onclick="selectSeverity(this, 'mild')">😊<br><small>Mild</small></button>
+            <button class="severity-btn" onclick="selectSeverity(this, 'moderate')">😐<br><small>Moderate</small></button>
+            <button class="severity-btn" onclick="selectSeverity(this, 'severe')">😣<br><small>Severe</small></button>
+          </div>
+        </div>
+        <div class="quiz-nav">
+          <button class="btn-back" onclick="goStep(2)">← Back</button>
+          <button class="btn-next" onclick="goStep(4)">Next →</button>
+        </div>
+      </div>
+
+      <!-- STEP 4: Lifestyle -->
+      <div class="quiz-step" id="step-4">
+        <h2>Tell us about your lifestyle</h2>
+        <p class="subtitle">Lifestyle factors significantly impact skin health and ingredient tolerance.</p>
+
+        <div class="form-group">
+          <label class="form-label">Daily sun exposure</label>
+          <div class="slider-wrap">
+            <div class="slider-label"><span>Mostly indoors</span><strong id="sun-out">Moderate</strong></div>
+            <input type="range" min="1" max="5" value="3" oninput="updateSlider('sun-out', this.value, ['Minimal','Low','Moderate','High','Very High'])">
+            <div class="range-track"><span>Minimal</span><span>Very High</span></div>
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label class="form-label">Average nightly sleep</label>
+          <div class="slider-wrap">
+            <div class="slider-label"><span>Hours</span><strong id="sleep-out">7 hrs</strong></div>
+            <input type="range" min="4" max="10" value="7" step="0.5" oninput="updateSleep(this.value)">
+            <div class="range-track"><span>4 hrs</span><span>10 hrs</span></div>
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label class="form-label">Stress level</label>
+          <div class="severity-row">
+            <button class="severity-btn" onclick="selectSeverity(this, 'low', 'stress')">😌<br><small>Low</small></button>
+            <button class="severity-btn" onclick="selectSeverity(this, 'moderate', 'stress')">😐<br><small>Moderate</small></button>
+            <button class="severity-btn" onclick="selectSeverity(this, 'high', 'stress')">😰<br><small>High</small></button>
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label class="form-label">Diet quality</label>
+          <select class="select-input">
+            <option>Balanced (fruits, veggies, lean protein)</option>
+            <option>High in processed / sugary foods</option>
+            <option>Dairy-heavy diet</option>
+            <option>Plant-based / vegan</option>
+            <option>Ketogenic or low-carb</option>
+          </select>
+        </div>
+
+        <div class="quiz-nav">
+          <button class="btn-back" onclick="goStep(3)">← Back</button>
+          <button class="btn-next" onclick="goStep(5)">Next →</button>
+        </div>
+      </div>
+
+      <!-- STEP 5: Current Routine -->
+      <div class="quiz-step" id="step-5">
+        <h2>Your current skincare routine</h2>
+        <p class="subtitle">This helps us build on what's working and flag potential conflicts.</p>
+
+        <div class="form-group">
+          <label class="form-label">Current cleanser (if any)</label>
+          <input type="text" class="text-input" placeholder="e.g. CeraVe Hydrating Cleanser, foam cleanser…">
+        </div>
+
+        <div class="form-group">
+          <label class="form-label">Actives currently using (check all)</label>
+          <div class="option-grid" style="margin-top:0.5rem;">
+            <button class="option-btn" style="font-size:12px;" onclick="this.classList.toggle('selected')">Retinol / Retinoids</button>
+            <button class="option-btn" style="font-size:12px;" onclick="this.classList.toggle('selected')">Vitamin C</button>
+            <button class="option-btn" style="font-size:12px;" onclick="this.classList.toggle('selected')">AHA / BHA</button>
+            <button class="option-btn" style="font-size:12px;" onclick="this.classList.toggle('selected')">Niacinamide</button>
+            <button class="option-btn" style="font-size:12px;" onclick="this.classList.toggle('selected')">Peptides</button>
+            <button class="option-btn" style="font-size:12px;" onclick="this.classList.toggle('selected')">Hyaluronic Acid</button>
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label class="form-label">Any known allergies or sensitivities?</label>
+          <textarea class="text-input" placeholder="e.g. fragrance allergy, retinol irritation, latex…" style="min-height:70px;"></textarea>
+        </div>
+
+        <div class="form-group">
+          <label class="form-label">Are you pregnant or breastfeeding?</label>
+          <div class="severity-row" style="max-width:280px;">
+            <button class="severity-btn" onclick="selectSeverity(this, 'no', 'preg')">No</button>
+            <button class="severity-btn" onclick="selectSeverity(this, 'pregnant', 'preg')">Pregnant</button>
+            <button class="severity-btn" onclick="selectSeverity(this, 'breastfeeding', 'preg')">Breastfeeding</button>
+          </div>
+        </div>
+
+        <div class="quiz-nav">
+          <button class="btn-back" onclick="goStep(4)">← Back</button>
+          <button class="btn-next" onclick="goStep(6)">Next →</button>
+        </div>
+      </div>
+
+      <!-- STEP 6: Image Upload -->
+      <div class="quiz-step" id="step-6">
+        <h2>Optional skin photo</h2>
+        <p class="subtitle">Upload a close-up photo of your concern area for AI-enhanced assessment. Your photo is processed privately and not stored.</p>
+
+        <div class="upload-area" onclick="document.getElementById('photo-input').click()">
+          <div class="upload-icon">📸</div>
+          <p><strong>Click to upload</strong> or drag and drop</p>
+          <p style="margin-top:4px;">JPG, PNG up to 10MB — natural lighting recommended</p>
+        </div>
+        <input type="file" id="photo-input" accept="image/*" style="display:none;" onchange="previewPhoto(this)">
+        <div id="photo-preview" style="display:none;text-align:center;margin-bottom:1.5rem;">
+          <img id="preview-img" alt="Uploaded skin photo preview" style="max-height:180px;border-radius:var(--radius);border:1px solid var(--border);">
+          <p style="font-size:12px;color:var(--muted);margin-top:6px;">Photo uploaded ✓</p>
+        </div>
+
+        <div class="warning-box">
+          <span class="w-icon">🔒</span>
+          <p>Your photo is analyzed locally and never stored on our servers. All processing happens in your browser session only.</p>
+        </div>
+
+        <div class="quiz-nav">
+          <button class="btn-back" onclick="goStep(5)">← Back</button>
+          <button class="btn-next" onclick="generateResults()" style="background:var(--sky);">
+            ✦ Analyze My Skin
+          </button>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</div>
+
+<!-- RESULTS PAGE -->
+<div class="page" id="page-results">
+  <div class="results-wrap">
+    <div class="results-header">
+      <div>
+        <div class="badge badge-green" style="margin-bottom:0.5rem;">✦ Analysis Complete</div>
+        <h2 class="results-title">Your Skin Profile</h2>
+        <p class="results-subtitle">Personalized recommendations based on your dermatological assessment</p>
+      </div>
+      <button class="btn-secondary" onclick="showPage('quiz')">← Retake Analysis</button>
+    </div>
+
+    <div class="skin-profile-card">
+      <div class="profile-stat">
+        <div class="stat-icon">💧</div>
+        <div class="stat-label">Skin Type</div>
+        <div class="stat-value" id="res-skintype">Oily / Acne-prone</div>
+      </div>
+      <div class="profile-stat">
+        <div class="stat-icon">🎨</div>
+        <div class="stat-label">Fitzpatrick</div>
+        <div class="stat-value" id="res-fitz">Type III</div>
+      </div>
+      <div class="profile-stat">
+        <div class="stat-icon">⚡</div>
+        <div class="stat-label">Primary Concern</div>
+        <div class="stat-value" id="res-concern">Acne + Pigmentation</div>
+      </div>
+      <div class="profile-stat">
+        <div class="stat-icon">📊</div>
+        <div class="stat-label">Severity</div>
+        <div class="stat-value" id="res-severity">Moderate</div>
+      </div>
+      <div class="profile-stat">
+        <div class="stat-icon">☀️</div>
+        <div class="stat-label">UV Risk</div>
+        <div class="stat-value">Moderate</div>
+      </div>
+    </div>
+
+    <div class="full-result">
+      <!-- Active Ingredients -->
+      <div class="result-section">
+        <h3>🧬 Recommended Actives</h3>
+
+        <div class="ingredient-tag">
+          <span class="ing-name">Niacinamide 10%</span>
+          <span class="ing-conc">10% concentration · Serum</span>
+          <span class="ing-moa">Regulates sebum, reduces PIH, strengthens barrier</span>
+        </div>
+
+        <div class="ingredient-tag">
+          <span class="ing-name">Salicylic Acid 2%</span>
+          <span class="ing-conc">2% concentration · Cleanser/Toner</span>
+          <span class="ing-moa">Oil-soluble BHA exfoliates inside follicles, unclogs pores</span>
+        </div>
+
+        <div class="ingredient-tag">
+          <span class="ing-name">Azelaic Acid 10%</span>
+          <span class="ing-conc">10% concentration · Gel/Cream</span>
+          <span class="ing-moa">Antibacterial, tyrosinase inhibitor, reduces post-inflammatory erythema</span>
+        </div>
+
+        <div class="ingredient-tag">
+          <span class="ing-name">Retinol 0.025%</span>
+          <span class="ing-conc">0.025% beginner dose · Night Serum</span>
+          <span class="ing-moa">Increases cell turnover, stimulates collagen, normalizes follicular keratinization</span>
+        </div>
+
+        <div class="ingredient-tag">
+          <span class="ing-name">Hyaluronic Acid</span>
+          <span class="ing-conc">Multi-weight · Serum</span>
+          <span class="ing-moa">Humectant binding up to 1000x its weight in water for barrier hydration</span>
+        </div>
+
+        <div class="warning-box">
+          <span class="w-icon">⚠️</span>
+          <p><strong>Contraindications noted:</strong> Retinol must be avoided if pregnant or breastfeeding. Do not combine salicylic acid with high-concentration retinol on the same night initially — introduce slowly. Always apply SPF 30+ in the AM when using retinoids or AHAs/BHAs.</p>
+        </div>
+      </div>
+
+      <!-- Routine Builder -->
+      <div class="result-section">
+        <h3>🌅 Morning Routine (AM)</h3>
+        <div class="routine-timeline">
+          <div class="routine-step">
+            <div class="step-card">
+              <div class="step-name">1. Gentle Cleanser</div>
+              <div class="step-product">Low pH, non-stripping formula</div>
+              <div class="step-note">Avoid foaming SLS cleansers — they disrupt the acid mantle.</div>
+            </div>
+          </div>
+          <div class="routine-step">
+            <div class="step-card">
+              <div class="step-name">2. Niacinamide Serum</div>
+              <div class="step-product">10% Niacinamide + Zinc</div>
+              <div class="step-note">Apply to damp skin. Wait 60 sec before layering.</div>
+            </div>
+          </div>
+          <div class="routine-step">
+            <div class="step-card">
+              <div class="step-name">3. Lightweight Moisturizer</div>
+              <div class="step-product">Oil-free, non-comedogenic gel cream</div>
+              <div class="step-note">Hyaluronic acid base with ceramides for barrier support.</div>
+            </div>
+          </div>
+          <div class="routine-step">
+            <div class="step-card">
+              <div class="step-name">4. Sunscreen SPF 50+</div>
+              <div class="step-product">Broad-spectrum chemical or mineral</div>
+              <div class="step-note">Non-negotiable. Reapply every 2 hrs outdoors.</div>
+            </div>
+          </div>
+        </div>
+
+        <h3 style="margin-top:2rem;">🌙 Evening Routine (PM)</h3>
+        <div class="routine-timeline">
+          <div class="routine-step">
+            <div class="step-card">
+              <div class="step-name">1. Double Cleanse</div>
+              <div class="step-product">Micellar water → gentle foaming cleanser</div>
+              <div class="step-note">Remove sunscreen/makeup fully before actives.</div>
+            </div>
+          </div>
+          <div class="routine-step">
+            <div class="step-card">
+              <div class="step-name">2. BHA Toner (3×/week)</div>
+              <div class="step-product">2% Salicylic Acid</div>
+              <div class="step-note">Alternate nights with retinol — not same night initially.</div>
+            </div>
+          </div>
+          <div class="routine-step">
+            <div class="step-card">
+              <div class="step-name">3. Retinol (2×/week)</div>
+              <div class="step-product">0.025% Retinol in moisturizing base</div>
+              <div class="step-note">Buffer with moisturizer underneath if sensitive ("sandwich method").</div>
+            </div>
+          </div>
+          <div class="routine-step">
+            <div class="step-card">
+              <div class="step-name">4. Barrier Moisturizer</div>
+              <div class="step-product">Ceramide + peptide cream</div>
+              <div class="step-note">Lock in actives and support overnight repair.</div>
+            </div>
+          </div>
+        </div>
+
+        <div class="incompatible-row">
+          <span>⛔</span>
+          <span>Do not layer Vitamin C + Niacinamide at high concentrations — may cause temporary flushing. Use in AM/PM split instead.</span>
+        </div>
+        <div class="incompatible-row">
+          <span>⛔</span>
+          <span>Avoid using Retinol and high-strength AHA/BHA on the same evening until skin is acclimatized (minimum 4–6 weeks).</span>
+        </div>
+      </div>
+    </div>
+
+    <div style="margin-top:1.5rem; text-align:center;">
+      <button class="btn-primary" onclick="showPage('products')">View Matching Products →</button>
+    </div>
+  </div>
+</div>
+
+<!-- PRODUCTS PAGE -->
+<div class="page" id="page-products">
+  <div class="products-wrap">
+    <div class="section-header" style="text-align:left;margin-bottom:1.5rem;">
+      <div class="section-label">Product Recommendations</div>
+      <h2 style="font-family:var(--font-serif);font-size:2rem;">Matched to your skin profile</h2>
+    </div>
+
+    <div class="filter-bar">
+      <label>Filter:</label>
+      <select class="filter-select" onchange="filterProducts()">
+        <option value="all">All Concerns</option>
+        <option value="acne">Acne</option>
+        <option value="pigmentation">Pigmentation</option>
+        <option value="aging">Anti-aging</option>
+        <option value="hydration">Hydration</option>
+      </select>
+      <select class="filter-select" onchange="filterProducts()">
+        <option value="all">All Budgets</option>
+        <option value="affordable">Affordable (&lt;$20)</option>
+        <option value="mid">Mid-range ($20–$60)</option>
+        <option value="luxury">Luxury ($60+)</option>
+      </select>
+      <select class="filter-select">
+        <option>All formulas</option>
+        <option>Fragrance-free</option>
+        <option>Non-comedogenic</option>
+        <option>Vegan</option>
+        <option>Mineral SPF</option>
+      </select>
+    </div>
+
+    <div class="product-grid" id="product-grid">
+      <!-- Products injected by JS -->
+    </div>
+  </div>
+</div>
+
+<!-- EDUCATION PAGE -->
+<div class="page" id="page-education">
+  <div class="edu-wrap">
+    <div class="section-header" style="text-align:left;margin-bottom:1.5rem;">
+      <div class="section-label">Educational Dashboard</div>
+      <h2 style="font-family:var(--font-serif);font-size:2rem;">The science of healthy skin</h2>
+    </div>
+
+    <div class="edu-tabs">
+      <button class="edu-tab active" onclick="switchEduTab(this, 'biology')">Skin Biology</button>
+      <button class="edu-tab" onclick="switchEduTab(this, 'acne')">Acne Science</button>
+      <button class="edu-tab" onclick="switchEduTab(this, 'aging')">Anti-Aging</button>
+      <button class="edu-tab" onclick="switchEduTab(this, 'ingredients')">Key Actives</button>
+    </div>
+
+    <!-- Skin Biology -->
+    <div class="edu-content active" id="edu-biology">
+      <div class="edu-card">
+        <h3>The Structure of Skin</h3>
+        <p>Your skin is the body's largest organ, comprising three primary layers: the epidermis, dermis, and hypodermis. Each plays a critical role in protection, sensation, thermoregulation, and immune defense.</p>
+        <div class="skin-diagram">
+          <div class="layer-stack">
+            <div class="skin-layer" style="background:#E8A87C;">Stratum Corneum<small>Outermost barrier · Dead corneocytes + lipids</small></div>
+            <div class="skin-layer" style="background:#D4876A;">Epidermis<small>Keratinocytes · Melanocytes · Immune cells</small></div>
+            <div class="skin-layer" style="background:#A0614A;">Dermis<small>Collagen · Elastin · Fibroblasts · Blood vessels</small></div>
+            <div class="skin-layer" style="background:#7A4030;">Hypodermis<small>Adipose tissue · Nerve endings · Temperature regulation</small></div>
+          </div>
+          <div class="layer-info">
+            <h4>Skin Barrier Function</h4>
+            <ul>
+              <li>The stratum corneum acts as the body's primary defense</li>
+              <li>Natural Moisturizing Factor (NMF) maintains hydration</li>
+              <li>Ceramides, fatty acids, and cholesterol form the lipid bilayer</li>
+              <li>pH of 4.5–5.5 supports beneficial microbiome</li>
+              <li>Disrupted barrier = increased transepidermal water loss (TEWL)</li>
+              <li>Many actives (retinoids, AHAs) temporarily impair the barrier</li>
+            </ul>
+          </div>
+        </div>
+        <p>The skin microbiome — trillions of bacteria, fungi, and viruses — plays a critical regulatory role. <em>Cutibacterium acnes</em> exists on all skin; its overgrowth in anaerobic follicle environments triggers inflammatory acne.</p>
+      </div>
+    </div>
+
+    <!-- Acne Science -->
+    <div class="edu-content" id="edu-acne">
+      <div class="edu-card">
+        <h3>Acne Pathophysiology</h3>
+        <p>Acne vulgaris is a multifactorial inflammatory skin disorder involving the pilosebaceous unit. Understanding the four key drivers helps select the most targeted treatments.</p>
+        <div class="pathway-row">
+          <div class="pathway-step"><div class="p-icon">🧫</div><strong style="font-size:13px;">Sebum Overproduction</strong><p>Androgen-driven excess sebum creates an anaerobic, lipid-rich environment</p></div>
+          <div class="pathway-step"><div class="p-icon">🔒</div><strong style="font-size:13px;">Follicular Occlusion</strong><p>Abnormal keratinization blocks follicle openings, trapping sebum</p></div>
+          <div class="pathway-step"><div class="p-icon">🦠</div><strong style="font-size:13px;">C. acnes Proliferation</strong><p>Bacteria metabolize sebum, releasing pro-inflammatory fatty acids</p></div>
+          <div class="pathway-step"><div class="p-icon">🔥</div><strong style="font-size:13px;">Inflammation</strong><p>Innate immune response: papules, pustules, nodules, cysts</p></div>
+        </div>
+        <p>Post-inflammatory hyperpigmentation (PIH) is a frequent sequela, especially in Fitzpatrick types III–VI. It results from excess melanin deposition following inflammation — not a true scar. Ingredients like niacinamide, azelaic acid, and tranexamic acid address this via tyrosinase inhibition.</p>
+      </div>
+    </div>
+
+    <!-- Anti-Aging -->
+    <div class="edu-content" id="edu-aging">
+      <div class="edu-card">
+        <h3>The Science of Skin Aging</h3>
+        <p>Skin aging occurs through two distinct but interacting pathways: intrinsic (chronological) aging driven by genetics and cellular senescence, and extrinsic aging caused by environmental exposure — predominantly UV radiation (photoaging).</p>
+        <div class="science-grid">
+          <div class="science-card">
+            <div class="sci-icon">⏳</div>
+            <h4>Intrinsic Aging</h4>
+            <p>Gradual decline in fibroblast activity reduces collagen I and III synthesis. Elastin cross-linking increases rigidity. Telomere shortening drives cellular senescence.</p>
+          </div>
+          <div class="science-card">
+            <div class="sci-icon">☀️</div>
+            <h4>Photoaging (UVA/UVB)</h4>
+            <p>UVA generates ROS that activate matrix metalloproteinases (MMPs) — enzymes that degrade collagen and elastin. Accounts for ~80% of visible facial aging.</p>
+          </div>
+          <div class="science-card">
+            <div class="sci-icon">🧬</div>
+            <h4>Collagen Degradation</h4>
+            <p>From age 25, collagen production declines ~1% per year. Retinoids counteract MMP activity and stimulate procollagen synthesis via retinoic acid receptors.</p>
+          </div>
+          <div class="science-card">
+            <div class="sci-icon">💊</div>
+            <h4>Evidence-based Interventions</h4>
+            <p>Retinoids (gold standard), SPF 50+ (prevention), vitamin C (antioxidant + collagen support), peptides (signaling molecules), and growth factors.</p>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Key Ingredients -->
+    <div class="edu-content" id="edu-ingredients">
+      <div class="edu-card">
+        <h3>Key Active Ingredients Explained</h3>
+        <p>Active ingredients are functional molecules with clinically proven mechanisms of action. Concentration, formulation, and pH all influence efficacy and tolerability.</p>
+        <div class="science-grid">
+          <div class="science-card"><div class="sci-icon">🔴</div><h4>Retinol / Retinoids</h4><p>Vitamin A derivatives. Bind nuclear receptors, normalize cell turnover, stimulate collagen. Begin at 0.025–0.1%; expect a 2–4 week purge phase.</p></div>
+          <div class="science-card"><div class="sci-icon">🟡</div><h4>Vitamin C (L-AA)</h4><p>Potent antioxidant at 10–20% L-ascorbic acid (pH &lt;3.5). Inhibits melanogenesis, boosts collagen synthesis, neutralizes UV-induced free radicals.</p></div>
+          <div class="science-card"><div class="sci-icon">🔵</div><h4>Niacinamide</h4><p>B3 vitamin. Reduces melanin transfer, regulates sebum, strengthens ceramide synthesis, anti-inflammatory. Well-tolerated across all skin types.</p></div>
+          <div class="science-card"><div class="sci-icon">🟢</div><h4>Azelaic Acid</h4><p>Dicarboxylic acid at 10–20%. Anti-inflammatory, antibacterial, tyrosinase inhibitor. Safe in pregnancy (Rx-grade 20%). Targets PIH and rosacea.</p></div>
+          <div class="science-card"><div class="sci-icon">⚪</div><h4>Salicylic Acid (BHA)</h4><p>Oil-soluble beta-hydroxy acid at 0.5–2%. Penetrates follicles to dissolve sebum and dead cells. Anti-inflammatory. Ideal for oily/acne skin.</p></div>
+          <div class="science-card"><div class="sci-icon">💧</div><h4>Hyaluronic Acid</h4><p>Glycosaminoglycan humectant. Multi-weight molecules hydrate at different skin depths. Binds up to 1,000× its weight in water. Universally tolerated.</p></div>
+        </div>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<!-- LOADING OVERLAY -->
+<div class="loading-overlay" id="loading-overlay">
+  <div class="loading-spinner"></div>
+  <div class="loading-text">Analyzing your skin profile…</div>
+  <div class="loading-sub">Applying dermatological algorithms · Matching cosmeceutical science</div>
+</div>
+
+<script src="script.js"></script>
+</body>
+</html>
